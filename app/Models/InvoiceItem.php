@@ -79,8 +79,9 @@ class InvoiceItem extends Model
 
     public function scopeItemAttributes($query)
     {
+        $tablePrefix = DB::getTablePrefix();
         $query->select(
-            DB::raw('sum(quantity) as total_quantity, sum(base_total) as total_amount, invoice_items.name')
+            DB::raw("sum(quantity) as total_quantity, sum(base_total) as total_amount, {$tablePrefix}invoice_items.name")
         )->groupBy('invoice_items.name');
     }
 }

@@ -22,14 +22,15 @@ class CustomersController extends Controller
         $this->authorize('viewAny', Customer::class);
 
         $limit = $request->has('limit') ? $request->limit : 10;
+        $tablePrefix = DB::getTablePrefix();
 
         $customers = Customer::with('creator')
             ->whereCompany()
             ->applyFilters($request->all())
             ->select(
                 'customers.*',
-                DB::raw('sum(invoices.base_due_amount) as base_due_amount'),
-                DB::raw('sum(invoices.due_amount) as due_amount'),
+                DB::raw("sum({$tablePrefix}invoices.base_due_amount) as base_due_amount"),
+                DB::raw("sum({$tablePrefix}invoices.due_amount) as due_amount"),
             )
             ->groupBy('customers.id')
             ->leftJoin('invoices', 'customers.id', '=', 'invoices.customer_id')
